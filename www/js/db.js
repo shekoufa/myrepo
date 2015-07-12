@@ -1,6 +1,6 @@
 function createDb(){
 	var db = window.openDatabase("otpdb", "1.0", "OTP Database", 1000000);
-    db.transaction(populateDB, errorCB, successCB);
+    db.transaction(populateDB, errorCB, successCreateDB);
 	return db;
 }
 function updateDataForSMSEnter(tx){
@@ -237,6 +237,11 @@ function errorCB(err) {
     alert("Error processing in SQL: "+err.message);
 }
 function successCB() {
+}
+function successCreateDB() {
+    db.transaction(function(tx){
+        getSafetyPass(tx);
+    }, errorCB);
 }
 
 function parseHexString(str) {
