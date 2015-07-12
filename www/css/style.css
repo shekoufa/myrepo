@@ -1,0 +1,73 @@
+@media screen and (orientation: portrait)
+{
+    .ui-page{
+
+        background: url("images/backgroundOTP-portrait.jpg") !important;
+        background-image: url("images/backgroundOTP-portrait.jpg");
+    }
+    #main-container{
+        width: 90% !important;
+        margin: 0 auto !important;
+    }
+    #header{
+        height: 57px !important;
+    }
+}
+@media screen and (orientation: landscape)
+{
+    .ui-page{
+        background: url("images/backgroundOTP-landscape.jpg") no-repeat !important;
+        background-image: url("images/backgroundOTP-landscape.jpg");
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+
+    }
+    #main-container{
+        width: 55% !important;
+        /*margin: auto auto !important;*/
+        margin-left: 35px !important;
+        position: absolute;
+        left: 0;
+
+    }
+    #header{
+        height: 57px !important;
+        position: fixed;
+        width: 210px;
+        opacity: 1;
+
+    }
+    .ui-btn-icon-right:after, .ui-btn-icon-left:after, .ui-btn-icon-top:after, .ui-btn-icon-bottom:after, .ui-btn-icon-notext:after{
+        background-color: rgba(18, 76, 98, 0.9) !important;
+    }
+}
+
+.ui-page-theme-a .ui-btn, html .ui-bar-a .ui-btn, html .ui-body-a .ui-btn, html body .ui-group-theme-a .ui-btn, html head + body .ui-btn.ui-btn-a, .ui-page-theme-a .ui-btn:visited, html .ui-bar-a .ui-btn:visited, html .ui-body-a .ui-btn:visited, html body .ui-group-theme-a .ui-btn:visited, html head + body .ui-btn.ui-btn-a:visited{
+    color: #03034b;
+}
+.ui-btn-icon-right:after, .ui-btn-icon-left:after, .ui-btn-icon-top:after, .ui-btn-icon-bottom:after, .ui-btn-icon-notext:after{
+    background-color: rgba(45, 26, 243, 0.9);
+}
+.ui-table td{
+    white-space: normal;
+}
+
+.login-error{
+    color: red;
+}
+
+.ui-collapsible-set{
+    padding-right: 0px;
+}
+/*.ui-icon-user:after{*/
+    /*background-image: url(../css/images/13-1.png);*/
+    /*background-size: contain;*/
+    /*background-color: transparent;*/
+/*}*/
+/*.ui-icon-branch:after{*/
+    /*background-image: url(../css/images/13-1.png);*/
+    /*background-size: contain;*/
+    /*background-color: transparent;*/
+/*}*/

@@ -1,0 +1,269 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<!--<base href="http://172.16.24.151/"></base>-->
+    <meta charset="utf-8">
+    <title>بانک خاورمیانه</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="barcodescanner.js"></script>
+	<script type="text/javascript" src="AppVersion.js"></script>
+    <script src="js/jquery.js"></script>
+
+    <link href="css/themes/default/rtl.jquery.mobile-1.4.0.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/>
+    <link href="js/parsley.css" rel="stylesheet"/>
+    <script src="js/rtl.jquery.mobile-1.4.0.js"></script>
+    <script src="js/parsley.min.js"></script>
+    <script src="js/i18n/fa.js"></script>
+    <!--<script src="js/jquery.validate.min.js"></script>-->
+    <script src="js/core-min.js"></script>
+    <script src="js/enc-base64-min.js"></script>
+    <script src="js/sha256.js"></script>
+    <script src="js/hmac-min.js"></script>
+    <script src="js/soapclient.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/logic.js"></script>
+    <script src="js/db.js"></script>
+    <style>
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading {
+            margin: 0;
+        }
+
+        .ui-li-static.ui-collapsible {
+            padding: 0;
+        }
+
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading > .ui-btn {
+            border-top-width: 0;
+        }
+
+        .ui-li-static.ui-collapsible > .ui-collapsible-heading.ui-collapsible-heading-collapsed > .ui-btn,
+        .ui-li-static.ui-collapsible > .ui-collapsible-content {
+            border-bottom-width: 0;
+        }
+    </style>
+</head>
+<body>
+<script language="JavaScript">
+    //var url = 'http://172.20.36.3:8180/MobileServices/IMobileWS';
+//    var url = 'http://77.104.81.52:8180/MobileServices/IMobileWS';
+//    var url='http://mobile.middleeastbank.ir:8180/MobileServices/IMobileAppServices'
+    var url='http://172.16.24.151:8180/MobileServices/IMobileAppServices'
+//    var url='http://172.22.113.150:9393/MobileServices/IMobileAppServices'
+//    var url='http://172.22.113.150:9292/dmCmsService/IDMMobileWebServices'
+//    var url='http://172.22.113.176:9494/MobileServices/IMobileAppServices'
+//    var url='http://172.22.113.170:9494/MobileServices/IMobileWS'
+	document.addEventListener("deviceready", onDeviceReady, false);
+	var db = null;
+	function onDeviceReady() {
+		db = createDb();
+        db.transaction(function(tx){
+            getSafetyPass(tx);
+        }, errorCB);
+	}
+	
+    var customerId;
+    var bank;
+    var sessionId;
+    var userId;
+    var encryptOtp;
+    var registrationNo;
+    var currentDate;
+    var mobileNo;
+    var key;
+    $(document).on('pagebeforecreate', "#page", function() {
+//        loadContent("login");
+//        loadContent("branchesAndAtms");
+//        loadContent("contactInfo");
+//        loadContent("feedback");
+//        correctTranslations();
+    });
+    /*$(document).ready(function(){
+		
+		getAppVersion(function(version) {
+			alert(version);
+		});
+		
+	});*/
+	function clearInputs(){
+//		$("#customerId").val("");
+//		$("#internetBankingId").val("");
+//		$("#registeredPhoneNo").val("");
+        $("#reg-form").parsley().reset();
+        $("#input-form").parsley().reset();
+        $("#sms-form").parsley().reset();
+        $('#register-error').hide();
+
+    }
+</script>
+<div data-role="page" id="page">
+    <div data-role="header" id="header">
+        <img src="css/images/logo.png" style="padding-right: 2px;" class="ui-btn-icon-right ui-li-icon" />
+    </div>
+    <div role="main" id="main" style="display: none;" id="main-container" class="ui-content">
+        <!--<div class="loading-meb">-->
+            <!--<h3>درحال بارگزاری...</h3>-->
+        <!--</div>-->
+        <ul data-role="collapsible-set" data-inset="true">
+            <li style="display: none;" id="generate-li" style="" data-role="collapsible" data-iconpos="left">
+                <h2 id="generate-heading" data-content="generation"><img style="float: right;margin-left: 10px;" width="20" src="img/otp.png"/>ایجاد رمز یکبار مصرف</h2>
+                <div id="generate-body" data-theme="a" class="ui-corner-all">
+                    <div id="generation-inputs">
+                        <div class="input-form" id="gen-form" data-parsley-validate>
+                            <input id="seed" type="text" type="number" required data-parsley-type="digits" placeholder="عدد اعلام شده به شما"/>
+                            <input type="button" style="background: green;opacity:0.4;" value="ایجاد رمز"  onclick="validateForm('gen-form');"/>
+                            <div id="gen-otp-container" style="display: none;">
+                                <p>رمز شما:</p>
+                                <div id="generated-otp" style="border-radius: 10px; margin: 10px auto; padding: 5px 0; background-color:#ffe9c3;text-align: center; width: 40%; font-weight: bolder; color: darkgreen;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li id="login-inputs"  data-role="collapsible" data-iconpos="left">
+                <h2 id="login-heading" data-content="registration"><img style="float: right;margin-left: 10px;" width="20" src="img/registration.png"/>ورود</h2>
+                <div id="login-login" data-theme="a" class="ui-corner-all">
+                    <div >
+                        <div class="login-form" id="login-form" data-parsley-validate>
+                            <div style="text-align: center;">برای ورود به برنامه گذرواژه ایی که در هنگام ثبت نام انتخاب نمودید را وارد نمایید:</div>
+                            <input id="login-pass" type="password" required placeholder="گذرواژه ورود"/>
+                            <div id="invalid-login" style="color: red; display: none; text-align: center;">گذرواژه وارد شده درست نمی باشد. لطفاً مجددا تلاش نمایید</div>
+                            <div id="incomplete-reg" style="color: red; display: none; text-align: center;">ثبت نام شما کامل نشده است. لطفاً برنامه را مجددا نصب نموده و ثبت نام خود را تکمیل نمایید.</div>
+                            <input type="button" style="background: green;opacity:0.4;" value="ورود"  onclick="logMeIn();"/>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li id="reg-li"  data-role="collapsible" data-iconpos="left">
+                <h2 id="reg-heading" data-content="registration"><img style="float: right;margin-left: 10px;" width="20" src="img/registration.png"/>ثبت نام</h2>
+                <div id="login" data-theme="a" class="ui-corner-all">
+
+                    <div id="registration-inputs" style="display: none;">
+                        <div class="input-form" id="reg-form" data-parsley-validate>
+                            <input id="customerId" required type="number" data-parsley-type="digits" placeholder="شناسه مشتری"/>
+                            <input id="internetBankingId" required placeholder="نام کاربری اینترنت بانک"/>
+                            <input id="registeredPhoneNo" required type="number" data-parsley-type="digits" placeholder="شماره همراه ثبت شده"/>
+                            <div>
+                            <input type="button" style="background: green;opacity:0.4;" value="ثبت نام"  onclick="validateRegForm();"/>
+                            <input type="button" style="background:orange;opacity:0.4;" value="پاک کردن" onclick="clearInputs();"/>
+                            </div>
+                            <div id="register-error" style="color: red;display: none; text-align: center;" ></div>
+                        </div>
+					</div>
+                    <div id="safety-registration-inputs" style="display: none;">
+                        <div class="input-forms" id="safereg-form" data-parsley-validate>
+                            <div style="text-align: center;">بعد از ثبت نام، در هر بار ورود لازم است گذرواژه ورود را وارد نمایید. لطفا گذرواژه مورد نظر خود را وارد نمایید:</div>
+                            <input id="safepassval" required data-parsley-equalto="#safepassval-re" type="password" placeholder="گذرواژه ورود"/>
+                            <input id="safepassval-re" required data-parsley-equalto="#safepassval" type="password" placeholder="تکرار گذرواژه ورود"/>
+                            <input type="button" style="background: green;opacity:0.4;" value="ادامه" onclick="validateSafetyRegFrom();"/>
+                        </div>
+                    </div>
+                    <div id="safepass-input" style="display: none;">
+                        <div class="input-form" id="safepass-form" data-parsley-validate>
+                            <div style="text-align: center;" id="safepass-needed"></div>
+                            <input id="safepass" required="true" type="password"/>
+                            <input id="hidden-safepass" type="hidden"/>
+                            <input type="button" style="background: green;opacity:0.4;" value="ادامه" onclick="validateSafePassForm();"/>
+                            <div id="safepass-error" style="color: red; display: none; text-align: center;">گذرواژه وارد شده درست نمی باشد. لطفاً مجددا تلاش نمایید</div>
+                        </div>
+                    </div>
+                    <div id="sms-inputs" style="display:none;">
+                        <div class="input-form" id="sms-form" data-parsley-validate>
+                            <div style="text-align: center;" id="register-success"></div>
+                            <input id="sentSms" required type="number" data-parsley-type="digits" placeholder="کد امنیتی"/>
+                            <input id="dbSms" type="hidden"/>
+                            <input type="button" style="background: green;opacity:0.4;" value="ارسال" onclick="validateSmsForm();"/>
+                            <div id="sms-error" style="color: red;display: none;text-align: center;">کد وارد شده درست نمی باشد. مجددا پیامک خود را چک نموده و با دقت کد را وارد نمایید.</div>
+                        </div>
+					</div>
+                </div>
+            </li>
+            <li data-role="collapsible" data-iconpos="left">
+                <h2 data-content="contactInfo"><img style="float: right;margin-left: 10px;" width="20" src="img/contactus.png"/>تماس با ما</h2>
+                <div id="contactInfo" style="direction:rtl; text-align: justify; ">
+					<h4>آدرس:</h4>
+					<p>
+					تهران، خیابان احمد قصیر (بخارست)،  نبش خیابان پنجم، پلاک 2
+					<br/>
+					<b>کد پستی: </b>1513645717
+					<br/>
+					<b>پست الکترونیک: </b>info@middleeastbank.ir
+					<br/>
+					<h4>اطلاعات تماس:</h4>
+					<b>تلفن: </b> 42178000
+					<br/>
+					<b>فکس: </b> 88701095
+					<br/>
+					<b>پست الکترونیک: </b> middleeast@bank.co.in
+					<br/>
+					</p>
+				</div>
+            </li>
+            <li data-role="collapsible" data-iconpos="left">
+                <h2 data-content="help"><img style="float: right;margin-left: 10px;" width="20" src="img/help.png"/>راهنما</h2>
+                <div id="help">
+                    <div><label style="font-weight: bold; display: inline-block; margin-left: 15px;">نسخه:</label><div style="display: inline-block;" id="version-container">1.0</div></div>
+                    <div><label style="font-weight: bold; display: inline-block; margin-left: 15px;">شماره ثبت نام:</label><div style="display: inline-block;" id="regno-container"></div></div>
+					<p style="text-align: justify;">
+                        برای استفاده از این برنامه لازم است که ابتدا ثبت نام نمایید. تنها در حین ثبت نام بایستی گوشی همراه شما به اینترنت متصل باشد. بعد از ثبت نام موفقیت آمیز می توانید با استفاده از منوی «ایجاد رمز یکبار مصرف» رمز خود را ایجاد نمایید. اگر با وارد کردن رمز ایجاد شده موفق به انجام عملیات مورد نظر نشدید، با در دست داشتن شماره ثبت نام به نزدیک ترین شعبه بانک خاورمیانه مراجعه نمایید.					</p>
+				</div>
+            </li>
+        </ul>
+
+    </div>
+</div>
+<script type="text/javascript">
+    function validateForm(id){
+        var validationStatus = $("#"+id).parsley().validate();
+        if(validationStatus){
+            _generateOtp();
+        }else{
+            return false;
+        }
+    }
+    function validateSmsForm(){
+        var validationStatus = $("#sms-form").parsley().validate();
+        if(validationStatus){
+            _sendConfirmation();
+        }else{
+            return false;
+        }
+    }
+    function validateSafetyRegFrom(){
+        var validationStatus = $("#safereg-form").parsley().validate();
+        if(validationStatus){
+            _sendSafetyPass();
+        }else{
+            return false;
+        }
+    }
+    function validateSafePassForm(){
+        var validationStatus = $("#safepass-form").parsley().validate();
+        if(validationStatus){
+            _confirmSafetyPass();
+        }else{
+            return false;
+        }
+    }
+    function validateRegForm(){
+        var validationStatus = $("#reg-form").parsley().validate();
+        if(validationStatus){
+            _registerMe();
+        }else{
+            return false;
+        }
+    }
+    function logMeIn(){
+        var validationStatus = $("#login-form").parsley().validate();
+        var enteredPass = $("#login-pass").val();
+        enteredPass = CryptoJS.SHA256(enteredPass).toString()
+        if(validationStatus){
+            _logMeIn(enteredPass);
+        }else{
+            return falsel
+        }
+    }
+</script>
+</body>
+</html>
