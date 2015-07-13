@@ -1,5 +1,5 @@
 function createDb(){
-	var db = window.openDatabase("otpdb", "1.0", "OTP Database", 1000000);
+	var db = window.openDatabase("otpdb", "1.1", "OTP Database", 1000000);
     db.transaction(populateDB, errorCB, successCreateDB);
 	return db;
 }
@@ -12,10 +12,11 @@ function selectAll(tx){
 }
 
 function selectAllSuccess(tx, results){
-
     if(results.rows.length==0){
         db.transaction(createTable,errorCB,successCB);
-    }
+    }else{
+		getSafetyPass(tx);
+	}
     db.transaction(getRegistrationNoById,errorCB,successCB);
 
 }
@@ -207,7 +208,6 @@ function selectKeyDataSuccess(encryptOtp, registrationNo, userId, currentDate, c
         });
     }else{
         updateRegistrationNo(registrationNo,encryptOtp,tx);
-        alert("This is the key: "+encryptOtp);
     }
 }
 //function insertKeyData(encryptOtp , registrationNo, userId, customerId, mobileNo, key, tx){
@@ -216,6 +216,7 @@ function selectKeyDataSuccess(encryptOtp, registrationNo, userId, currentDate, c
 function createTable(tx){
     tx.executeSql('DROP TABLE IF EXISTS registration',[],function(tx){
         tx.executeSql('CREATE TABLE IF NOT EXISTS registration (ID unique, CUSTID VARCHAR, LOGINID VARCHAR, MOBNO VARCHAR, OTP VARCHAR, ENCKEY VARCHAR, REGNO VARCHAR,SMSENTERED VARCHAR, SAFETYPASS VARCHAR)');
+		getSafetyPass(tx);
     },errorCB);
 }
 function insertKeyData(customerId, userId, mobileNo, encryptOtp, key, registrationNo,tx){
@@ -239,9 +240,7 @@ function errorCB(err) {
 function successCB() {
 }
 function successCreateDB() {
-    db.transaction(function(tx){
-        getSafetyPass(tx);
-    }, errorCB);
+	
 }
 
 function parseHexString(str) {
