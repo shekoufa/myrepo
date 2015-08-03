@@ -59,7 +59,8 @@ function _sendSafetyPass(){
                 updateSafetyPass(safetyRes.encryptedPassword,tx);
             });
             $("#safety-registration-inputs").fadeOut("slow",function(){
-                $("#sms-inputs").show();
+                $("#reg-li").hide();
+                $("#generate-li").show();
             });
         });
     });
@@ -69,15 +70,59 @@ function _logMeIn(enteredPass){
         inAppLogin(enteredPass,tx);
     });
 }
+function _confirmRegisterMe(){
+    $.mobile.loading("show");
+    _confirmRegister($('#customerId').val(), $('#internetBankingId').val(),$('#registeredPhoneNo').val(),function(loginRes){
+        if (loginRes.status != '00') {
+            $('#register-error').html("کاربری با این اطلاعات وجود ندارد. اطلاعات خود را با دقت وارد نمایید.");
+            $('#register-error').show();
+            //$('#customerId').val('');
+            //$('#internetBankingId').val('');
+            //$('#registeredPhoneNo').val('');
+            $.mobile.loading("hide");
+        }
+        else {
+            $('#register-error').html('');
+            $('#register-error').hide();
+            encryptOtp = loginRes.encryptOtp;
+            //if(loginRes.otpSafetyPassword==null){
+            //}else{
+            //    _storeSafetyPass(loginRes.otpSafetyPassword);
+            //    $("#hidden-safepass").val(loginRes.otpSafetyPassword);
+            //}
+
+            registrationNo = loginRes.registrationNo;
+            userId = $('#internetBankingId').val();
+            currentDate = loginRes.currentDate;
+            customerId = $('#customerId').val();
+            mobileNo = $('#registeredPhoneNo').val();
+            key = calcKeyChecksum(customerId, mobileNo, encryptOtp, currentDate);
+            //syncAccounts();
+            db.transaction(function(tx){
+                selectKeyData(encryptOtp,registrationNo,userId,currentDate,customerId,mobileNo,key,tx);
+            }, errorCB);
+            $("#regno-container").html(registrationNo);
+            //$('#customerId').val('');
+            //$('#internetBankingId').val('');
+            //$('#registeredPhoneNo').val('');
+            $.mobile.loading("hide");
+            $("#sms-inputs").fadeOut("slow",function(){
+                $("#sms-error").hide("slow");
+                $("#safety-registration-inputs").show();
+            });
+            //$("#reg-li").hide();
+        }
+    });
+}
 function _registerMe() {
     /*if (!$('#un').val()) {
-        $('.login-error').html(messageKey('usernameIsNull'));
-        return;
-    }
-    if (!$('#pw').val()) {
-        $('.login-error').html(messageKey('passwordIsNull'));
-        return;
-    }*/
+     $('.login-error').html(messageKey('usernameIsNull'));
+     return;
+     }
+     if (!$('#pw').val()) {
+     $('.login-error').html(messageKey('passwordIsNull'));
+     return;
+     }*/
 
     runAsync(function () {
         $.mobile.loading("show");
@@ -93,36 +138,20 @@ function _registerMe() {
             else {
                 $('#register-error').html('');
                 $('#register-error').hide();
-                encryptOtp = loginRes.encryptOtp;
+                //encryptOtp = loginRes.encryptOtp;
                 //if(loginRes.otpSafetyPassword==null){
                 $("#registration-inputs").fadeOut("slow",function(){
-                   $("#safety-registration-inputs").show();
+                    $("#sms-inputs").show();
                 });
-                //}else{
-                //    _storeSafetyPass(loginRes.otpSafetyPassword);
-                //    $("#hidden-safepass").val(loginRes.otpSafetyPassword);
-                //}
-                registrationNo = loginRes.registrationNo;
+                encryptOtp = loginRes.encryptOtp;
                 userId = $('#internetBankingId').val();
                 currentDate = loginRes.currentDate;
                 customerId = $('#customerId').val();
                 mobileNo = $('#registeredPhoneNo').val();
-                key = calcKeyChecksum(customerId, mobileNo, encryptOtp, currentDate);
-                //syncAccounts();
                 db.transaction(function(tx){
-                    selectKeyData(encryptOtp,registrationNo,userId,currentDate,customerId,mobileNo,key,tx);
+                    selectKeyData(encryptOtp,"N/A",userId,currentDate,customerId,mobileNo,"N/A",tx);
                 }, errorCB);
-                $("#regno-container").html(registrationNo);
-                //$('#customerId').val('');
-                //$('#internetBankingId').val('');
-                //$('#registeredPhoneNo').val('');
                 $.mobile.loading("hide");
-
-				/*$("#register-success").html("با موفقیت ثبت نام نمودید.  کد امنیتی موجود در پیامکی که به زودی دریافت می نمایید را در قسمت زیر وارد نمایید.");
-				$("#registration-inputs").fadeOut("slow",function(){
-					$("#sms-inputs").show();
-				});*/
-
             }
         });
     });
@@ -173,9 +202,9 @@ function runWithLoading(v, msg, callback) {
         $.mobile.loading('hide');
     },4200);
     //setTimeout(function () {
-        v();
-        //$.mobile.loading('hide');
-        //if (callback)
-        //    callback();
+    v();
+    //$.mobile.loading('hide');
+    //if (callback)
+    //    callback();
     //}, 100);
 }

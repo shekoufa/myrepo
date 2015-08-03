@@ -59,14 +59,24 @@ function _sendSafetyPasswordSoap(safetyPass, username, callback){
     SOAPClient.invoke(url,action,pl,true,callback);
 
 }
+
 function _register(customerId, username, mobileNo,callback){
     if(mobileNo.length > 10){
         mobileNo = mobileNo.substr(mobileNo.length - 10);
     }
-	var action='mobileOTPRegistration';
-	var pl = fillRequestParams(action, 'MobileOTPRegWSReq_1', {loginUserId: username, cutomerId: customerId, mobileNo: mobileNo})
-	SOAPClient.invoke(url, action, pl, true,callback);
+    var action='mobileOTPRegistration';
+    var pl = fillRequestParams(action, 'MobileOTPRegWSReq_1', {loginUserId: username, cutomerId: customerId, mobileNo: mobileNo})
+    SOAPClient.invoke(url, action, pl, true,callback);
 }
+function _confirmRegister(customerId, username, mobileNo,callback){
+    if(mobileNo.length > 10){
+        mobileNo = mobileNo.substr(mobileNo.length - 10);
+    }
+    var action='mobileOTPRegistrationConfirm';
+    var pl = fillRequestParams(action, 'MobileOTPRegWSReq_1', {loginUserId: username, cutomerId: customerId, mobileNo: mobileNo})
+    SOAPClient.invoke(url, action, pl, true,callback);
+}
+
 function login(username, password,callback) {
     var action = 'validateUserDetails';
     var pl = fillRequestParams(action, 'MobileUserValidationRequest_1', {userId: username, userPassword: CryptoJS.SHA256(password).toString()});
@@ -90,11 +100,15 @@ function calcChecksum(action, additionalData) {
         beforeSign += '#' + additionalData['cutomerId'];
         beforeSign += '#' + additionalData['mobileNo'];
     }
+    if(action == 'mobileOTPRegistrationConfirm'){
+        beforeSign += '#' + additionalData['cutomerId'];
+        beforeSign += '#' + additionalData['mobileNo'];
+    }
     if(action == 'mobileOTPSafetyPassInsertion'){
         beforeSign += '#' + additionalData['loginId'];
         beforeSign += '#' + additionalData['safetyPassword'];
     }
-	if (action == 'validateUserDetails') {
+    if (action == 'validateUserDetails') {
         beforeSign += '#' + additionalData['userId'];
         beforeSign += '#' + additionalData['userPassword'];
     }

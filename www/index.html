@@ -1,13 +1,13 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<!--<base href="http://172.16.24.151/"></base>-->
+    <!--<base href="http://172.16.24.151/"></base>-->
     <meta charset="utf-8">
     <title>بانک خاورمیانه</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="barcodescanner.js"></script>
-	<script type="text/javascript" src="AppVersion.js"></script>
+    <script type="text/javascript" src="AppVersion.js"></script>
     <script src="js/jquery.js"></script>
 
     <link href="css/themes/default/rtl.jquery.mobile-1.4.0.css" rel="stylesheet"/>
@@ -47,19 +47,19 @@
 <body>
 <script language="JavaScript">
     //var url = 'http://172.20.36.3:8180/MobileServices/IMobileWS';
-//    var url = 'http://77.104.81.52:8180/MobileServices/IMobileWS';
-//    var url='http://mobile.middleeastbank.ir:8180/MobileServices/IMobileAppServices'
-    var url='http://172.16.24.151:8180/MobileServices/IMobileAppServices'
-//    var url='http://172.22.113.150:9393/MobileServices/IMobileAppServices'
-//    var url='http://172.22.113.150:9292/dmCmsService/IDMMobileWebServices'
-//    var url='http://172.22.113.176:9494/MobileServices/IMobileAppServices'
-//    var url='http://172.22.113.170:9494/MobileServices/IMobileWS'
-	document.addEventListener("deviceready", onDeviceReady, false);
-	var db = null;
-	function onDeviceReady() {
-		db = createDb();
-	}
-	
+    //    var url = 'http://77.104.81.52:8180/MobileServices/IMobileWS';
+    //    var url='http://mobile.middleeastbank.ir:8180/MobileServices/IMobileAppServices'
+//    var url='http://172.16.24.151:8180/MobileServices/IMobileAppServices'
+        var url='http://172.22.113.150:9393/MobileServices/IMobileAppServices'
+    //    var url='http://172.22.113.150:9292/dmCmsService/IDMMobileWebServices'
+    //    var url='http://172.22.113.176:9494/MobileServices/IMobileAppServices'
+    //    var url='http://172.22.113.170:9494/MobileServices/IMobileWS'
+    document.addEventListener("deviceready", onDeviceReady, false);
+    var db = null;
+    function onDeviceReady() {
+        db = createDb();
+    }
+
     var customerId;
     var bank;
     var sessionId;
@@ -77,13 +77,13 @@
 //        correctTranslations();
     });
     /*$(document).ready(function(){
-		
-		getAppVersion(function(version) {
-			alert(version);
-		});
-		
-	});*/
-	function clearInputs(){
+
+     getAppVersion(function(version) {
+     alert(version);
+     });
+
+     });*/
+    function clearInputs(){
 //		$("#customerId").val("");
 //		$("#internetBankingId").val("");
 //		$("#registeredPhoneNo").val("");
@@ -100,7 +100,7 @@
     </div>
     <div role="main" id="main" style="display: none;" id="main-container" class="ui-content">
         <!--<div class="loading-meb">-->
-            <!--<h3>درحال بارگزاری...</h3>-->
+        <!--<h3>درحال بارگزاری...</h3>-->
         <!--</div>-->
         <ul data-role="collapsible-set" data-inset="true">
             <li style="display: none;" id="generate-li" style="" data-role="collapsible" data-iconpos="left">
@@ -142,12 +142,12 @@
                             <input id="internetBankingId" required placeholder="نام کاربری اینترنت بانک"/>
                             <input id="registeredPhoneNo" required type="number" data-parsley-type="digits" placeholder="شماره همراه ثبت شده"/>
                             <div>
-                            <input type="button" style="background: green;opacity:0.4;" value="ثبت نام"  onclick="validateRegForm();"/>
-                            <input type="button" style="background:orange;opacity:0.4;" value="پاک کردن" onclick="clearInputs();"/>
+                                <input type="button" style="background: green;opacity:0.4;" value="ثبت نام"  onclick="validateRegForm();"/>
+                                <input type="button" style="background:orange;opacity:0.4;" value="پاک کردن" onclick="clearInputs();"/>
                             </div>
                             <div id="register-error" style="color: red;display: none; text-align: center;" ></div>
                         </div>
-					</div>
+                    </div>
                     <div id="safety-registration-inputs" style="display: none;">
                         <div class="input-forms" id="safereg-form" data-parsley-validate>
                             <div style="text-align: center;">بعد از ثبت نام، در هر بار ورود لازم است گذرواژه ورود را وارد نمایید. لطفا گذرواژه مورد نظر خود را وارد نمایید:</div>
@@ -169,42 +169,44 @@
                         <div class="input-form" id="sms-form" data-parsley-validate>
                             <div style="text-align: center;" id="register-success"></div>
                             <input id="sentSms" required type="number" data-parsley-type="digits" placeholder="کد امنیتی"/>
+                            <input id="startCofirmation" value="N" onchange="startConfirmation();" type="hidden"/>
+
                             <input id="dbSms" type="hidden"/>
                             <input type="button" style="background: green;opacity:0.4;" value="ارسال" onclick="validateSmsForm();"/>
                             <div id="sms-error" style="color: red;display: none;text-align: center;">کد وارد شده درست نمی باشد. مجددا پیامک خود را چک نموده و با دقت کد را وارد نمایید.</div>
                         </div>
-					</div>
+                    </div>
                 </div>
             </li>
             <li data-role="collapsible" data-iconpos="left">
                 <h2 data-content="contactInfo"><img style="float: right;margin-left: 10px;" width="20" src="img/contactus.png"/>تماس با ما</h2>
                 <div id="contactInfo" style="direction:rtl; text-align: justify; ">
-					<h4>آدرس:</h4>
-					<p>
-					تهران، خیابان احمد قصیر (بخارست)،  نبش خیابان پنجم، پلاک 2
-					<br/>
-					<b>کد پستی: </b>1513645717
-					<br/>
-					<b>پست الکترونیک: </b>info@middleeastbank.ir
-					<br/>
-					<h4>اطلاعات تماس:</h4>
-					<b>تلفن: </b> 42178000
-					<br/>
-					<b>فکس: </b> 88701095
-					<br/>
-					<b>پست الکترونیک: </b> middleeast@bank.co.in
-					<br/>
-					</p>
-				</div>
+                    <h4>آدرس:</h4>
+                    <p>
+                        تهران، خیابان احمد قصیر (بخارست)،  نبش خیابان پنجم، پلاک 2
+                        <br/>
+                        <b>کد پستی: </b>1513645717
+                        <br/>
+                        <b>پست الکترونیک: </b>info@middleeastbank.ir
+                        <br/>
+                    <h4>اطلاعات تماس:</h4>
+                    <b>تلفن: </b> 42178000
+                    <br/>
+                    <b>فکس: </b> 88701095
+                    <br/>
+                    <b>پست الکترونیک: </b> middleeast@bank.co.in
+                    <br/>
+                    </p>
+                </div>
             </li>
             <li data-role="collapsible" data-iconpos="left">
                 <h2 data-content="help"><img style="float: right;margin-left: 10px;" width="20" src="img/help.png"/>راهنما</h2>
                 <div id="help">
                     <div><label style="font-weight: bold; display: inline-block; margin-left: 15px;">نسخه:</label><div style="display: inline-block;" id="version-container">1.0</div></div>
                     <div><label style="font-weight: bold; display: inline-block; margin-left: 15px;">شماره ثبت نام:</label><div style="display: inline-block;" id="regno-container"></div></div>
-					<p style="text-align: justify;">
+                    <p style="text-align: justify;">
                         برای استفاده از این برنامه لازم است که ابتدا ثبت نام نمایید. تنها در حین ثبت نام بایستی گوشی همراه شما به اینترنت متصل باشد. بعد از ثبت نام موفقیت آمیز می توانید با استفاده از منوی «ایجاد رمز یکبار مصرف» رمز خود را ایجاد نمایید. اگر با وارد کردن رمز ایجاد شده موفق به انجام عملیات مورد نظر نشدید، با در دست داشتن شماره ثبت نام به نزدیک ترین شعبه بانک خاورمیانه مراجعه نمایید.					</p>
-				</div>
+                </div>
             </li>
         </ul>
 
@@ -234,6 +236,10 @@
         }else{
             return false;
         }
+    }
+    function startConfirmation(){
+//        alert("I'm here finally!");
+        _confirmRegisterMe();
     }
     function validateSafePassForm(){
         var validationStatus = $("#safepass-form").parsley().validate();

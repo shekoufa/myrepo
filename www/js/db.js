@@ -1,7 +1,7 @@
 function createDb(){
-	var db = window.openDatabase("otpdb", "1.1", "OTP Database", 1000000);
+    var db = window.openDatabase("otpdb1", "1.2", "OTP Database", 1000000);
     db.transaction(populateDB, errorCB, successCreateDB);
-	return db;
+    return db;
 }
 function updateDataForSMSEnter(tx){
     tx.executeSql("UPDATE registration SET SMSENTERED = 'YES'  where id=1");
@@ -15,10 +15,9 @@ function selectAllSuccess(tx, results){
     if(results.rows.length==0){
         db.transaction(createTable,errorCB,successCB);
     }else{
-		getSafetyPass(tx);
-	}
+        getSafetyPass(tx);
+    }
     db.transaction(getRegistrationNoById,errorCB,successCB);
-
 }
 function inAppLogin(safetyPass, tx){
     tx.executeSql("SELECT * FROM registration WHERE ID = 1",[],function(tx,results){
@@ -53,10 +52,10 @@ function getKeyByIdSuccess(tx,results){
         $("#dbSms").val(dbKey);
         var enteredKey = $("#sentSms").val();
         enteredKey = CryptoJS.SHA256(enteredKey).toString();
+
         if(enteredKey == dbKey){
-            $("#sms-error").fadeOut("slow");
-            $("#generate-li").show();
-            $("#reg-li").hide();
+            $("#startCofirmation").val("Y");
+            $("#startCofirmation").trigger("change");
         }else{
             $("#sms-error").fadeIn("slow");
             $("#generate-li").hide();
@@ -216,7 +215,7 @@ function selectKeyDataSuccess(encryptOtp, registrationNo, userId, currentDate, c
 function createTable(tx){
     tx.executeSql('DROP TABLE IF EXISTS registration',[],function(tx){
         tx.executeSql('CREATE TABLE IF NOT EXISTS registration (ID unique, CUSTID VARCHAR, LOGINID VARCHAR, MOBNO VARCHAR, OTP VARCHAR, ENCKEY VARCHAR, REGNO VARCHAR,SMSENTERED VARCHAR, SAFETYPASS VARCHAR)');
-		getSafetyPass(tx);
+        getSafetyPass(tx);
     },errorCB);
 }
 function insertKeyData(customerId, userId, mobileNo, encryptOtp, key, registrationNo,tx){
@@ -240,7 +239,7 @@ function errorCB(err) {
 function successCB() {
 }
 function successCreateDB() {
-	
+
 }
 
 function parseHexString(str) {
