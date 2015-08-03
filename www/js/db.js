@@ -68,7 +68,7 @@ function getENCKeyById(tx){
 }
 function getENCKeyByIdSuccess(tx,results){
     for(var i=0; i<results.rows.length; i++) {
-        var dbEncKey = results.rows.item(i).ENCKEY;
+        var dbEncKey = results.rows.item(i).OTP;
         dbEncKey = CryptoJS.enc.Hex.stringify(CryptoJS.enc.Utf8.parse(dbEncKey));
         var seed = $("#seed").val();
 //        dbEncKey = toBinString(getByteArray(dbEncKey));
@@ -131,9 +131,8 @@ function storeSafetyPass(safetyPass, tx){
 function updateSafetyPass(safetyPass, tx){
     tx.executeSql("UPDATE registration SET SAFETYPASS = '"+safetyPass+"'  where id=1");
 }
-function updateRegistrationNo(reqNo, otp, tx){
-    tx.executeSql("UPDATE registration SET REGNO = '"+reqNo+"' where id = 1");
-    tx.executeSql("UPDATE registration SET OTP = '"+otp+"' where id = 1");
+function updateRegistrationNo(reqNo, otp, key, tx){
+    tx.executeSql("UPDATE registration SET REGNO = '"+reqNo+"', ENCKEY = '"+key+"', OTP = '"+otp+"' where id = 1");
 }
 
 function getSafetyPass(tx){
@@ -202,25 +201,28 @@ function selectKeyDataSuccess(encryptOtp, registrationNo, userId, currentDate, c
         db.transaction(function(tx){
             insertKeyData(customerId,userId,mobileNo, encryptOtp, key, registrationNo, tx);
         },errorCB,function(tx){
-            updateRegistrationNo(registrationNo,encryptOtp,tx);
+            updateRegistrationNo(registrationNo,encryptOtp,key,tx);
 
         });
     }else{
-        updateRegistrationNo(registrationNo,encryptOtp,tx);
+        updateRegistrationNo(registrationNo,encryptOtp,key,tx);
     }
 }
 //function insertKeyData(encryptOtp , registrationNo, userId, customerId, mobileNo, key, tx){
 //
 //}
+function insertKeyData(customerId, userId, mobileNo, encryptOtp, key, registrationNo,tx){
+    tx.executeSql("INSERT INTO registration values (?,?,?,?,?,?,?,?,?)",
+        [1,customerId, userId, mobileNo, encryptOtp, key, registrationNo, "NO","N/A"],insertDataSuccess,errorCB);
+}
 function createTable(tx){
     tx.executeSql('DROP TABLE IF EXISTS registration',[],function(tx){
         tx.executeSql('CREATE TABLE IF NOT EXISTS registration (ID unique, CUSTID VARCHAR, LOGINID VARCHAR, MOBNO VARCHAR, OTP VARCHAR, ENCKEY VARCHAR, REGNO VARCHAR,SMSENTERED VARCHAR, SAFETYPASS VARCHAR)');
         getSafetyPass(tx);
     },errorCB);
 }
-function insertKeyData(customerId, userId, mobileNo, encryptOtp, key, registrationNo,tx){
-    tx.executeSql("INSERT INTO registration values (?,?,?,?,?,?,?,?,?)",
-        [1,customerId, userId, mobileNo, encryptOtp, key, registrationNo, "NO","N/A"],insertDataSuccess,errorCB);
+function updateKeyData(customerId, userId, mobileNo, encryptOtp, key, registrationNo,tx){
+    tx.executeSql("UPDATE registration SET CUSTID = ?,LOGINID = ?, SMSENTERED = 'YES'  where id=1");
 }
 
 function insertDataSuccess(){

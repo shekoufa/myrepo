@@ -96,6 +96,8 @@ function _confirmRegisterMe(){
             currentDate = loginRes.currentDate;
             customerId = $('#customerId').val();
             mobileNo = $('#registeredPhoneNo').val();
+            currentDate = $("#regdateholder").val();
+
             key = calcKeyChecksum(customerId, mobileNo, encryptOtp, currentDate);
             //syncAccounts();
             db.transaction(function(tx){
@@ -146,6 +148,7 @@ function _registerMe() {
                 encryptOtp = loginRes.encryptOtp;
                 userId = $('#internetBankingId').val();
                 currentDate = loginRes.currentDate;
+                $("#regdateholder").val(currentDate);
                 customerId = $('#customerId').val();
                 mobileNo = $('#registeredPhoneNo').val();
                 db.transaction(function(tx){
