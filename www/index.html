@@ -57,6 +57,20 @@
     document.addEventListener("deviceready", onDeviceReady, false);
     var db = null;
     function onDeviceReady() {
+//        $("input[type=text]").css("text-align","left");
+//        $("input[type=text]").css("direction","ltr");
+//        $("input[type=number]").css("text-align","left");
+//        $("input[type=number]").css("direction","ltr");
+//        $("input[type=password]").css("text-align","left");
+//        $("input[type=password]").css("direction","ltr");
+        $("body").on("focus", "input[type=text], input[type=number], input[type=password]", function() {
+            $(this).css("text-align","left");
+            $(this).css("direction","ltr");
+        });
+        $("body").on("blur", "input[type=text], input[type=number], input[type=password]", function() {
+            $(this).css("text-align","right");
+            $(this).css("direction","rtl");
+        });
         db = createDb();
     }
 
@@ -93,6 +107,10 @@
         $('#register-error').hide();
 
     }
+    function clearInputsForOTP(){
+        $("#gen-otp-container").hide();
+        $("#seed").val("");
+    }
 </script>
 <div data-role="page" id="page">
     <div data-role="header" id="header">
@@ -108,8 +126,10 @@
                 <div id="generate-body" data-theme="a" class="ui-corner-all">
                     <div id="generation-inputs">
                         <div class="input-form" id="gen-form" data-parsley-validate>
-                            <input id="seed" type="text" type="number" required data-parsley-type="digits" placeholder="عدد اعلام شده به شما"/>
+                            <input id="seed" type="number" required data-parsley-type="digits" placeholder="عدد اعلام شده به شما"/>
                             <input type="button" style="background: green;opacity:0.4;" value="ایجاد رمز"  onclick="validateForm('gen-form');"/>
+                            <input type="button" style="background:orange;opacity:0.4;" value="پاک کردن" onclick="clearInputsForOTP();"/>
+
                             <div id="gen-otp-container" style="display: none;">
                                 <p>رمز شما:</p>
                                 <div id="generated-otp" style="border-radius: 10px; margin: 10px auto; padding: 5px 0; background-color:#ffe9c3;text-align: center; width: 40%; font-weight: bolder; color: darkgreen;"></div>
@@ -139,7 +159,7 @@
                     <div id="registration-inputs" style="display: none;">
                         <div class="input-form" id="reg-form" data-parsley-validate>
                             <input id="customerId" required type="number" data-parsley-type="digits" placeholder="شناسه مشتری"/>
-                            <input id="internetBankingId" required placeholder="نام کاربری اینترنت بانک"/>
+                            <input id="internetBankingId" type="text" required placeholder="نام کاربری اینترنت بانک"/>
                             <input id="registeredPhoneNo" required type="number" data-parsley-type="digits" placeholder="شماره همراه ثبت شده"/>
                             <div>
                                 <input type="button" style="background: green;opacity:0.4;" value="ثبت نام"  onclick="validateRegForm();"/>
